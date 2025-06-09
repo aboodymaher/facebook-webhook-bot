@@ -68,4 +68,36 @@ function callSendAPI(sender_psid, response) {
 
   request({
     uri: 'https://graph.facebook.com/v18.0/me/messages',
-    qs: { access_token: PAGE_AC
+    qs: { access_token: PAGE_ACCESS_TOKEN },
+    method: 'POST',
+    json: request_body
+  }, (err, res, body) => {
+    if (!err) {
+      console.log('Message sent!');
+    } else {
+      console.error('Unable to send message:', err);
+    }
+  });
+}
+
+// 🆕 دالة لحفظ المستخدمين في ملف users.json
+function saveUser(sender_psid) {
+  let users = [];
+
+  // لو الملف موجود، نقرأه
+  if (fs.existsSync('users.json')) {
+    const data = fs.readFileSync('users.json');
+    users = JSON.parse(data);
+  }
+
+  // لو المستخدم مش موجود بالفعل، نضيفه
+  if (!users.includes(sender_psid)) {
+    users.push(sender_psid);
+    fs.writeFileSync('users.json', JSON.stringify(users, null, 2));
+    console.log(`📝 مستخدم جديد محفوظ: ${sender_psid}`);
+  }
+}
+
+// start server
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => console.log(`Running on port ${PORT}`));
