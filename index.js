@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
+const fs = require('fs'); // 🆕 علشان نقدر نقرأ ونكتب ملفات
 
 const app = express();
 const PAGE_ACCESS_TOKEN = 'EAAOtwLi7oBUBO6ctgGTS33C7N2KcrJTGHWeldZAFVlZA1nEXFu7trXyQGaV39gOKBkL5FAScztZCvHariSszZCtVZBaMbBEGtePXK9yu0oq9w5AiA30XgqZBPN6hkJBx0fdZA5qnM3huStIFbznK0dWVRcpLzPmC3l955F02qYTdBMWpYZBs6Y1ZCShBg2oqQ9xbTlo3XDcnUamBWe2kmOwZDZD';
@@ -36,6 +37,7 @@ app.post('/webhook', (req, res) => {
       const sender_psid = webhook_event.sender.id;
 
       if (webhook_event.message) {
+        saveUser(sender_psid); // 🆕 نسجل المستخدم في الملف
         handleMessage(sender_psid, webhook_event.message);
       }
     });
@@ -66,18 +68,4 @@ function callSendAPI(sender_psid, response) {
 
   request({
     uri: 'https://graph.facebook.com/v18.0/me/messages',
-    qs: { access_token: PAGE_ACCESS_TOKEN },
-    method: 'POST',
-    json: request_body
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('Message sent!');
-    } else {
-      console.error('Unable to send message:', err);
-    }
-  });
-}
-
-// start server
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`Running on port ${PORT}`));
+    qs: { access_token: PAGE_AC
